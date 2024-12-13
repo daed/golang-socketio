@@ -1,17 +1,19 @@
 package gosocketio
 
 import (
-	"github.com/graarh/golang-socketio/transport"
 	"strconv"
+
+	"github.com/daed/golang-socketio/transport"
 )
 
 const (
-	webSocketProtocol = "ws://"
+	webSocketProtocol       = "ws://"
 	webSocketSecureProtocol = "wss://"
-	socketioUrl       = "/socket.io/?EIO=3&transport=websocket"
+	socketioUrl             = "/socket.io/?EIO=4&transport=websocket"
 )
 
-/**
+/*
+*
 Socket.io client representation
 */
 type Client struct {
@@ -19,9 +21,10 @@ type Client struct {
 	Channel
 }
 
-/**
+/*
+*
 Get ws/wss url by host and port
- */
+*/
 func GetUrl(host string, port int, secure bool) string {
 	var prefix string
 	if secure {
@@ -32,7 +35,8 @@ func GetUrl(host string, port int, secure bool) string {
 	return prefix + host + ":" + strconv.Itoa(port) + socketioUrl
 }
 
-/**
+/*
+*
 connect to host and initialise socket.io protocol
 
 The correct ws protocol url example:
@@ -58,7 +62,8 @@ func Dial(url string, tr transport.Transport) (*Client, error) {
 	return c, nil
 }
 
-/**
+/*
+*
 Close client connection
 */
 func (c *Client) Close() {

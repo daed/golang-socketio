@@ -3,11 +3,12 @@ package gosocketio
 import (
 	"encoding/json"
 	"errors"
-	"github.com/graarh/golang-socketio/protocol"
-	"github.com/graarh/golang-socketio/transport"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/daed/golang-socketio/protocol"
+	"github.com/daed/golang-socketio/transport"
 )
 
 const (
@@ -18,7 +19,8 @@ var (
 	ErrorWrongHeader = errors.New("Wrong header")
 )
 
-/**
+/*
+*
 engine.io header to send or receive
 */
 type Header struct {
@@ -28,7 +30,8 @@ type Header struct {
 	PingTimeout  int      `json:"pingTimeout"`
 }
 
-/**
+/*
+*
 socket.io connection handler
 
 use IsAlive to check that handler is still working
@@ -53,7 +56,8 @@ type Channel struct {
 	requestHeader http.Header
 }
 
-/**
+/*
+*
 create channel, map, and set active
 */
 func (c *Channel) initChannel() {
@@ -63,21 +67,24 @@ func (c *Channel) initChannel() {
 	c.alive = true
 }
 
-/**
+/*
+*
 Get id of current socket connection
 */
 func (c *Channel) Id() string {
 	return c.header.Sid
 }
 
-/**
+/*
+*
 Checks that Channel is still alive
 */
 func (c *Channel) IsAlive() bool {
 	return c.alive
 }
 
-/**
+/*
+*
 Close channel
 */
 func CloseChannel(c *Channel, m *methods, args ...interface{}) error {
@@ -107,7 +114,7 @@ func CloseChannel(c *Channel, m *methods, args ...interface{}) error {
 	return nil
 }
 
-//incoming messages loop, puts incoming messages to In channel
+// incoming messages loop, puts incoming messages to In channel
 func inLoop(c *Channel, m *methods) error {
 	for {
 		pkg, err := c.conn.GetMessage()
@@ -146,7 +153,8 @@ func AmountOfOverflooded() int64 {
 	return int64(len(overflooded))
 }
 
-/**
+/*
+*
 outgoing messages loop, sends messages from channel to socket
 */
 func outLoop(c *Channel, m *methods) error {
@@ -177,7 +185,8 @@ func outLoop(c *Channel, m *methods) error {
 	return nil
 }
 
-/**
+/*
+*
 Pinger sends ping messages for keeping connection alive
 */
 func pinger(c *Channel) {

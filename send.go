@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"time"
-	"github.com/graarh/golang-socketio/protocol"
+
+	"github.com/daed/golang-socketio/protocol"
 )
 
 var (
@@ -12,7 +13,8 @@ var (
 	ErrorSocketOverflood = errors.New("Socket overflood")
 )
 
-/**
+/*
+*
 Send message packet to socket
 */
 func send(msg *protocol.Message, c *Channel, args interface{}) error {
@@ -39,26 +41,28 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 	return nil
 }
 
-/**
+/*
+*
 Create packet based on given data and send it
 */
 func (c *Channel) Emit(method string, args interface{}) error {
 	msg := &protocol.Message{
-		Type: protocol.MessageTypeEmit,
-		Method:  method,
+		Type:   protocol.MessageTypeEmit,
+		Method: method,
 	}
 
 	return send(msg, c, args)
 }
 
-/**
+/*
+*
 Create ack packet based on given data and send it and receive response
 */
 func (c *Channel) Ack(method string, args interface{}, timeout time.Duration) (string, error) {
 	msg := &protocol.Message{
-		Type: protocol.MessageTypeAckRequest,
-		AckId:   c.ack.getNextId(),
-		Method:  method,
+		Type:   protocol.MessageTypeAckRequest,
+		AckId:  c.ack.getNextId(),
+		Method: method,
 	}
 
 	waiter := make(chan string)

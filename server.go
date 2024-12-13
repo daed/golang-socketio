@@ -7,12 +7,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/graarh/golang-socketio/protocol"
-	"github.com/graarh/golang-socketio/transport"
 	"math/rand"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/daed/golang-socketio/protocol"
+	"github.com/daed/golang-socketio/transport"
 )
 
 var (
@@ -20,7 +21,8 @@ var (
 	ErrorConnectionNotFound = errors.New("Connection not found")
 )
 
-/**
+/*
+*
 socket.io server instance
 */
 type Server struct {
@@ -37,21 +39,24 @@ type Server struct {
 	tr transport.Transport
 }
 
-/**
+/*
+*
 Get ip of socket client
 */
 func (c *Channel) Ip() string {
 	return c.ip
 }
 
-/**
+/*
+*
 Get request header of this connection
 */
 func (c *Channel) RequestHeader() http.Header {
 	return c.requestHeader
 }
 
-/**
+/*
+*
 Get channel by it's sid
 */
 func (s *Server) GetChannel(sid string) (*Channel, error) {
@@ -66,7 +71,8 @@ func (s *Server) GetChannel(sid string) (*Channel, error) {
 	return c, nil
 }
 
-/**
+/*
+*
 Join this channel to given room
 */
 func (c *Channel) Join(room string) error {
@@ -93,7 +99,8 @@ func (c *Channel) Join(room string) error {
 	return nil
 }
 
-/**
+/*
+*
 Remove this channel from given room
 */
 func (c *Channel) Leave(room string) error {
@@ -120,7 +127,8 @@ func (c *Channel) Leave(room string) error {
 	return nil
 }
 
-/**
+/*
+*
 Get amount of channels, joined to given room, using channel
 */
 func (c *Channel) Amount(room string) int {
@@ -131,7 +139,8 @@ func (c *Channel) Amount(room string) int {
 	return c.server.Amount(room)
 }
 
-/**
+/*
+*
 Get amount of channels, joined to given room, using server
 */
 func (s *Server) Amount(room string) int {
@@ -142,7 +151,8 @@ func (s *Server) Amount(room string) int {
 	return len(roomChannels)
 }
 
-/**
+/*
+*
 Get list of channels, joined to given room, using channel
 */
 func (c *Channel) List(room string) []*Channel {
@@ -153,7 +163,8 @@ func (c *Channel) List(room string) []*Channel {
 	return c.server.List(room)
 }
 
-/**
+/*
+*
 Get list of channels, joined to given room, using server
 */
 func (s *Server) List(room string) []*Channel {
@@ -183,7 +194,8 @@ func (c *Channel) BroadcastTo(room, method string, args interface{}) {
 	c.server.BroadcastTo(room, method, args)
 }
 
-/**
+/*
+*
 Broadcast message to all room channels
 */
 func (s *Server) BroadcastTo(room, method string, args interface{}) {
@@ -202,7 +214,8 @@ func (s *Server) BroadcastTo(room, method string, args interface{}) {
 	}
 }
 
-/**
+/*
+*
 Broadcast to all clients
 */
 func (s *Server) BroadcastToAll(method string, args interface{}) {
@@ -216,7 +229,8 @@ func (s *Server) BroadcastToAll(method string, args interface{}) {
 	}
 }
 
-/**
+/*
+*
 Generate new id for socket.io connection
 */
 func generateNewId(custom string) string {
@@ -229,7 +243,8 @@ func generateNewId(custom string) string {
 	return buf.String()[:20]
 }
 
-/**
+/*
+*
 On connection system handler, store sid
 */
 func onConnectStore(c *Channel) {
@@ -239,7 +254,8 @@ func onConnectStore(c *Channel) {
 	c.server.sids[c.Id()] = c
 }
 
-/**
+/*
+*
 On disconnection system handler, clean joins and sid
 */
 func onDisconnectCleanup(c *Channel) {
@@ -283,7 +299,8 @@ func (s *Server) SendOpenSequence(c *Channel) {
 	c.out <- protocol.MustEncode(&protocol.Message{Type: protocol.MessageTypeEmpty})
 }
 
-/**
+/*
+*
 Setup event loop for given connection
 */
 func (s *Server) SetupEventLoop(conn transport.Connection, remoteAddr string,
@@ -314,7 +331,8 @@ func (s *Server) SetupEventLoop(conn transport.Connection, remoteAddr string,
 	s.callLoopEvent(c, OnConnection)
 }
 
-/**
+/*
+*
 implements ServeHTTP function from http.Handler
 */
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -327,7 +345,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.tr.Serve(w, r)
 }
 
-/**
+/*
+*
 Get amount of current connected sids
 */
 func (s *Server) AmountOfSids() int64 {
@@ -337,7 +356,8 @@ func (s *Server) AmountOfSids() int64 {
 	return int64(len(s.sids))
 }
 
-/**
+/*
+*
 Get amount of rooms with at least one channel(or sid) joined
 */
 func (s *Server) AmountOfRooms() int64 {
@@ -347,7 +367,8 @@ func (s *Server) AmountOfRooms() int64 {
 	return int64(len(s.channels))
 }
 
-/**
+/*
+*
 Create new socket.io server
 */
 func NewServer(tr transport.Transport) *Server {
