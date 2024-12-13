@@ -74,16 +74,13 @@ func (c *Channel) Id() string {
 Checks that Channel is still alive
 */
 func (c *Channel) IsAlive() bool {
-	c.aliveLock.Lock()
-	defer c.aliveLock.Unlock()
-
 	return c.alive
 }
 
 /**
 Close channel
 */
-func closeChannel(c *Channel, m *methods, args ...interface{}) error {
+func CloseChannel(c *Channel, m *methods, args ...interface{}) error {
 	c.aliveLock.Lock()
 	defer c.aliveLock.Unlock()
 
@@ -115,18 +112,18 @@ func inLoop(c *Channel, m *methods) error {
 	for {
 		pkg, err := c.conn.GetMessage()
 		if err != nil {
-			return closeChannel(c, m, err)
+			return CloseChannel(c, m, err)
 		}
 		msg, err := protocol.Decode(pkg)
 		if err != nil {
-			closeChannel(c, m, protocol.ErrorWrongPacket)
+			CloseChannel(c, m, protocol.ErrorWrongPacket)
 			return err
 		}
 
 		switch msg.Type {
 		case protocol.MessageTypeOpen:
 			if err := json.Unmarshal([]byte(msg.Source[1:]), &c.header); err != nil {
-				closeChannel(c, m, ErrorWrongHeader)
+				CloseChannel(c, m, ErrorWrongHeader)
 			}
 			m.callLoopEvent(c, OnConnection)
 		case protocol.MessageTypePing:
@@ -156,7 +153,7 @@ func outLoop(c *Channel, m *methods) error {
 	for {
 		outBufferLen := len(c.out)
 		if outBufferLen >= queueBufferSize-1 {
-			return closeChannel(c, m, ErrorSocketOverflood)
+			return CloseChannel(c, m, ErrorSocketOverflood)
 		} else if outBufferLen > int(queueBufferSize/2) {
 			overfloodedLock.Lock()
 			overflooded[c] = struct{}{}
@@ -174,7 +171,7 @@ func outLoop(c *Channel, m *methods) error {
 
 		err := c.conn.WriteMessage(msg)
 		if err != nil {
-			return closeChannel(c, m, err)
+			return CloseChannel(c, m, err)
 		}
 	}
 	return nil
