@@ -21,6 +21,20 @@ type Client struct {
 	Channel
 }
 
+func FromTransport(conn transport.Conn) (*Client, error) {
+	c := &Client{}
+	c.initChannel()
+	c.initMethods()
+
+	c.conn = conn
+
+	go inLoop(&c.Channel, &c.methods)
+	go outLoop(&c.Channel, &c.methods)
+	go pinger(&c.Channel)
+
+	return c, nil
+}
+
 /*
 *
 Get ws/wss url by host and port
