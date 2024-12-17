@@ -21,7 +21,7 @@ type Client struct {
 	Channel
 }
 
-func FromTransport(conn transport.Conn) (*Client, error) {
+func FromTransport(conn any) (*Client, error) {
 	c := &Client{}
 	c.initChannel()
 	c.initMethods()
