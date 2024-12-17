@@ -3,10 +3,11 @@ package transport
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -120,12 +121,14 @@ func (wst *WebsocketTransport) HandleConnection(
 	return &WebsocketConnection{socket, wst}, nil
 }
 
-/**
+/*
+*
 Websocket connection do not require any additional processing
 */
 func (wst *WebsocketTransport) Serve(w http.ResponseWriter, r *http.Request) {}
 
-/**
+/*
+*
 Returns websocket connection with default params
 */
 func GetDefaultWebsocketTransport() *WebsocketTransport {
